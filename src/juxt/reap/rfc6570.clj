@@ -11,7 +11,8 @@
 
 (defn compile-uri-template [uri-template-str]
   (let [components (uri-template (re/input uri-template-str))]
-    {:components components
+    {:template uri-template-str
+     :components components
      :pattern
      (re-pattern
       (apply
