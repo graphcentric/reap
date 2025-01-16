@@ -936,6 +936,30 @@
 
       (is
        (=
+        {:empty ""}
+        (match-uri
+         (compile-uri-template "X{.empty}")
+         variable-types
+         "X.")))
+
+      (is
+       (=
+        {:empty nil}
+        (match-uri
+         (compile-uri-template "X{.empty}")
+         variable-types
+         "X")))
+
+      (is
+       (=
+        {}
+        (match-uri
+         (compile-uri-template "X{.undef}")
+         variable-types
+         "X")))
+
+      (is
+       (=
         (select-keys variables [:list])
         (match-uri
          (compile-uri-template "X{.list}")
@@ -947,6 +971,15 @@
         (select-keys variables [:list])
         (match-uri
          (compile-uri-template "X{.list*}")
+         variable-types
+         "X.red.green.blue")))
+
+      ;; TODO: Prefer this to be blue
+      (is
+       (=
+        {:var "red"}
+        (match-uri
+         (compile-uri-template "X{.var}")
          variable-types
          "X.red.green.blue")))
 
