@@ -512,7 +512,7 @@
          :v :integer
          :x :integer
          :y :integer
-         :empty :empty
+         :empty :string
          "empty_keys" :list}]
 
     (testing "Simple String Expansion: {var}"
