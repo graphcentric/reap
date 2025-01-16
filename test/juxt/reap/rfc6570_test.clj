@@ -974,13 +974,35 @@
          variable-types
          "X.red.green.blue")))
 
-      ;; TODO: Prefer this to be blue
+      ;; It is considered better to extract the right-most suffix
       (is
        (=
-        {:var "red"}
+        {:a "blue"}
         (match-uri
-         (compile-uri-template "X{.var}")
-         variable-types
+         (compile-uri-template "X{.a}")
+         {:a :string}
+         "X.red.green.blue")))
+
+      (is
+       (=
+        {:b "blue"
+         :a "green"}
+        (match-uri
+         (compile-uri-template "X{.a,b}")
+         {:a :string
+          :b :string}
+         "X.red.green.blue")))
+
+      ;; An exploded label matches all the labels, regardless of any
+      ;; that have already been captured by other variables.
+      (is
+       (=
+        {:b "blue"
+         :a ["red" "green" "blue"]}
+        (match-uri
+         (compile-uri-template "X{.a*,b}")
+         {:a :list
+          :b :string}
          "X.red.green.blue")))
 
       (is

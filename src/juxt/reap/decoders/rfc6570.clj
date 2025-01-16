@@ -247,7 +247,8 @@
                           (str/split expansion #",")))))
 
         \.
-        (let [values (map second (re-seq #"\.([^\.]*)" expansion))]
+        (let [values (map second (re-seq #"\.([^\.]*)" expansion))
+              nil-padding (max 0 (- (count varlist) (count values)))]
           (into {}
                 (map (fn [{:keys [varname explode]} value]
                        (let [[varname-k variable-type] (variable-type varname)]
@@ -271,8 +272,8 @@
                                                :when v]
                                            [(keyword k) (URLDecoder/decode v)]))
                               ))]))
-                     varlist
-                     (concat values (repeat nil)))))
+                     (reverse varlist)
+                     (reverse (concat values (repeat nil-padding nil))))))
 
         \/
         (into {} (distribute-values varlist (str/split expansion #"\/") variable-types))
@@ -337,20 +338,3 @@
                        dv)]))
                 varlist)
            (into {})))))
-
-(comment
-  (identity expansion)
-  (identity values)
-
-  (next (str/split ".foo.bar" #"\."))
-  (next (str/split ".foo" #"\."))
-  (next (str/split "." #"\."))
-  (next (str/split "" #"\."))
-
-  (let [s
-        #_".foo.bar"
-        ""
-        ]
-    (map second (re-seq #"\.([^\.]*)" s)))
-
-  (URLDecoder/decode nil))
