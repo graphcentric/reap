@@ -225,3 +225,9 @@
    (compile-uri-template "http://example.com/")
    {}
    "http://example.com/"))
+
+(comment
+  (match-uri
+   (compile-uri-template "http://example.com/search{/path}{.a,b,ext*}")
+   {:path :string :a :string :b :list :ext :string}
+   "http://example.com/search/foo.bar.json.txt.gz"))
