@@ -247,7 +247,7 @@
                           (str/split expansion #",")))))
 
         \.
-        (let [values (next (str/split expansion #"\."))]
+        (let [values (map second (re-seq #"\.([^\.]*)" expansion))]
           (into {}
                 (map (fn [{:keys [varname explode]} value]
                        (let [[varname-k variable-type] (variable-type varname)]
@@ -261,13 +261,14 @@
                                          (for [[k v] (map #(str/split % #"=") values)]
                                            [(keyword k) (URLDecoder/decode v)])))
                             (case variable-type
-                              :string (URLDecoder/decode value)
-                              :integer (Long/parseLong (URLDecoder/decode value))
+                              :string (when value (URLDecoder/decode value))
+                              :integer (when value (Long/parseLong (URLDecoder/decode value)))
                               :list (if value
                                       (mapv #(URLDecoder/decode %) (str/split value #"\,"))
                                       [])
                               :map (into {}
-                                         (for [[k v] (partition 2 (str/split value #","))]
+                                         (for [[k v] (partition 2 (str/split value #","))
+                                               :when v]
                                            [(keyword k) (URLDecoder/decode v)]))
                               ))]))
                      varlist
@@ -336,3 +337,20 @@
                        dv)]))
                 varlist)
            (into {})))))
+
+(comment
+  (identity expansion)
+  (identity values)
+
+  (next (str/split ".foo.bar" #"\."))
+  (next (str/split ".foo" #"\."))
+  (next (str/split "." #"\."))
+  (next (str/split "" #"\."))
+
+  (let [s
+        #_".foo.bar"
+        ""
+        ]
+    (map second (re-seq #"\.([^\.]*)" s)))
+
+  (URLDecoder/decode nil))
