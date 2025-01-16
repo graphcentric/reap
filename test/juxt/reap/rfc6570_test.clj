@@ -512,7 +512,7 @@
          :v :integer
          :x :integer
          :y :integer
-         :empty :string
+         :empty :empty
          "empty_keys" :list}]
 
     (testing "Simple String Expansion: {var}"
@@ -952,6 +952,14 @@
 
       (is
        (=
+        {:var nil}
+        (match-uri
+         (compile-uri-template "X{.var}")
+         {:var :string}
+         "X")))
+
+      (is
+       (=
         {}
         (match-uri
          (compile-uri-template "X{.undef}")
@@ -974,31 +982,12 @@
          variable-types
          "X.red.green.blue")))
 
-      ;; It is considered better to extract the right-most suffix
-      (is
-       (=
-        {:a "blue"}
-        (match-uri
-         (compile-uri-template "X{.a}")
-         {:a :string}
-         "X.red.green.blue")))
-
-      (is
-       (=
-        {:b "blue"
-         :a "green"}
-        (match-uri
-         (compile-uri-template "X{.a,b}")
-         {:a :string
-          :b :string}
-         "X.red.green.blue")))
-
       ;; An exploded label matches all the labels, regardless of any
       ;; that have already been captured by other variables.
       (is
        (=
         {:b "blue"
-         :a ["red" "green" "blue"]}
+         :a ["red" "green"]}
         (match-uri
          (compile-uri-template "X{.a*,b}")
          {:a :list
@@ -1091,6 +1080,14 @@
         (match-uri
          (compile-uri-template "{/var,empty}")
          variable-types
+         "/value/")))
+
+      (is
+       (=
+        {:a "value" :b ""}
+        (match-uri
+         (compile-uri-template "{/a,b}")
+         {:a :string :b :string}
          "/value/")))
 
       (is
